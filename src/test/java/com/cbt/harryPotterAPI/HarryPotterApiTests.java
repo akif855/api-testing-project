@@ -12,10 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class HarryPotterApiTests {
 
@@ -136,43 +133,32 @@ public class HarryPotterApiTests {
     @Test
     public void VerifyNumberOfCharacterIdAndHouse(){
         Response response = given().log().all().
-                header("Accept","application/json").
-                queryParam("key", "$2a$10$h.c.jQB1/qoc1yLMbYCLDey27dAUa.3010CajvbuKIgKOshwdY2Um").
-                when().get("/characters");
-
-        response.then().statusCode(200).contentType(ContentType.JSON).
-                body("_id", everyItem(not(empty())));
-
+                header("Accept", "application/json").
+                queryParam("key","$2a$10$s8DSvL7pIZx4pTGdYYw8GeG/W/U9AbBCUvK1VJ/d2SX1hr0eM6Rnq").
+                when().
+                get("/characters");
+        boolean check = false;
         List<Boolean> dumbledoresArmy = response.jsonPath().getList("dumbledoresArmy");
-
-        boolean b = false;
-        for (Boolean aBoolean : dumbledoresArmy) {
-            if(aBoolean == true || aBoolean == false){
-                b = true;
+        for (Boolean each: dumbledoresArmy){
+            if (each == true || each == false){
+                check = true;
             }
         }
-        assertThat(b, is(true));
-
-        List<String> houses = response.prettyPeek().jsonPath().getList("findAll{it.house}.house");
-
-
-        System.out.println("houses = " + houses);
-
-        List<String> listOfHouses = Arrays.asList("Gryffndor", "Ravenclaw", "Slytherin", "Huffepuff");
-
-//        assertThat(houses, everyItem(isIn(listOfHouses)));
-
-        b = true;
-        for (String house : houses) {
-
-            if(!listOfHouses.contains(house)){
-                b = false;
+        response.then().statusCode(200).contentType(ContentType.JSON).
+                body("_id",everyItem(not(empty())));
+        assertThat(true, is(check));
+        List<String> houses = response.jsonPath().getList("findAll{it.house}.house");
+        System.out.println(houses);
+        List<String> listOfHouses = new ArrayList<>(Arrays.asList("Gryffindor", "Ravenclaw", "Slytherin", "Hufflepuff"));
+        check = true;
+        for (String listOfHouse : houses) {
+            if (!listOfHouses.contains(listOfHouse)){
+                check = false;
                 break;
             }
-
         }
-        assertThat(b, is(true));
-
+        assertThat(true, is(check));
+        //        assertThat(houses,everyItem(isIn(listOfHouses))); this one is
     }
 
     /**
